@@ -1,16 +1,30 @@
+import json
 import streamlit as st
-from bokeh.plotting import figure
+import pandas as pd
+from bokeh.palettes import Spectral4
+from bokeh.plotting import figure, show
+from bokeh.models import DatetimeTickFormatter
 
-st.title("Exchange 2")
+with open("./datafiles/Exchange_3.json", "r") as file:
+    json_data = file.read()
 
-x = [1, 2, 3, 4, 5]
-y = [6, 7, 2, 4, 5]
+data = json.loads(json_data)
 
-p = figure(
-    title='simple line example',
-    x_axis_label='x',
-    y_axis_label='y')
+df = pd.DataFrame(data)
+df['TimeStamp'] = pd.to_datetime(df['TimeStamp'])
 
-p.line(x, y, legend_label='Trend', line_width=2)
+df_acknowledged = df[df['MessageType'] == 'NewOrderAcknowledged']
+
+# Bokeh
+p = figure(width=800, height=250, x_axis_type="datetime")
+p.title.text = 'OrderPrice of MessageType "NewOrderAcknowledged" over Time'
+
+# Order Price vs TimeStamp
+for symbol, color in zip(df_acknowledged['Symbol'].unique(), Spectral4):
+    symbol_data = df_acknowledged[df_acknowledged['Symbol'] == symbol]
+    p.line(symbol_data['TimeStamp'], symbol_data['OrderPrice'], line_width=2, color=color, alpha=0.8, legend_label=symbol)
+
+p.legend.location = "top_left"
+p.legend.click_policy = "hide"
 
 st.bokeh_chart(p, use_container_width=True)

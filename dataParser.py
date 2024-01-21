@@ -47,7 +47,7 @@ def extract_latest_order_prices(filedata):
     # latest trade price
     symbols_latest_prices = {symbol: filedata['OrderPrice'] for symbol, filedata in latest_order_prices.items()}
     if len(symbols_latest_prices) == 0:
-        symbols_latest_prices['None'] = {'OrderPrice': '0'}
+        symbols_latest_prices['None'] = 0.00
 
     return list(symbols_latest_prices.items())
 
