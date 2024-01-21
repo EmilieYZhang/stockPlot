@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 from bokeh.palettes import Spectral4
 from bokeh.plotting import figure
-from bokeh.models import HoverTool, ColumnDataSource, GraphRenderer
+from bokeh.models import HoverTool, ColumnDataSource
 
 st.title("Exchange 3")
 
