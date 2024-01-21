@@ -12,10 +12,12 @@ st.set_page_config(
     page_icon="💲",
 )
 
-st.title("Today's Overview")
+st.title("InfoExchange: Overview")
+st.text('Using Naitonal Bank\'s database of stock trades, we identify, analyze trends, \npatterns and anomalies across all exchanges.')
+st.text('Useful Tip: Graphs are interactive and instances can be saved as images.')
 
-st.subheader('By Exchange', divider='grey')
-st.text('This is a dropdown the ticker Symbols of each Exchange and the price of \ntheir most recent order aknowledged or executed.')
+st.subheader('Lastest Trading Prices', divider='grey')
+st.text('This is a dropdown the traded ticker Symbols of each Exchange and the price of \ntheir most recent order.')
 
 # Python list variables with tuple pairs for Exchange 1, Exchange 2, and Exchange 3
 Pairs1 = Ex1_symbols_latest_prices_list
@@ -50,8 +52,8 @@ cube = DataCube(source=source, columns=columns, grouping=grouping, target=target
 
 st.bokeh_chart(cube, use_container_width=True)
 
-st.subheader('Trend overview', divider='grey')
-st.text('Graphical representation of recently executed prices of ticker symbols.')
+st.subheader('Activity Graph', divider='grey')
+st.text('Number of Message types for all traded stocks.')
 
 ### SECOND GRAPH: grouped bar graph by traded symbols
 
@@ -67,8 +69,6 @@ with open("./datafiles/Exchange_3.json", "r") as file:
 json_data = data1 + data2 + data3
 
 df = pd.DataFrame(json_data)
-
-st.title("Symbol Activity Bar Graph")
 
 grouped_data = df.groupby(['Symbol', 'MessageType']).size().reset_index(name='Count')
 

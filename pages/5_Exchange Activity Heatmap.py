@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 st.title("Exchange Heatmap over Time")
+st.subheader("", divider='grey')
+st.text('Using colour and shade to detect hottest Exchanges over periods in minutes.\nThis plots the number of Orders Acknowledged.')
 
-# Example JSON data
 with open("./datafiles/Exchange_1.json", "r") as file:
     data1 = json.load(file)
 
