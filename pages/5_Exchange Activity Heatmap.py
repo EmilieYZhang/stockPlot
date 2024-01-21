@@ -1,16 +1,32 @@
+import json
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 import streamlit as st
-from bokeh.plotting import figure
 
-st.title("Exchange 2")
+st.title("Exchange Heatmap over Time")
 
-x = [1, 2, 3, 4, 5]
-y = [6, 7, 2, 4, 5]
+# Example JSON data
+with open("./datafiles/Exchange_1.json", "r") as file:
+    data1 = json.load(file)
 
-p = figure(
-    title='simple line example',
-    x_axis_label='x',
-    y_axis_label='y')
+with open("./datafiles/Exchange_2.json", "r") as file:
+    data2 = json.load(file)
 
-p.line(x, y, legend_label='Trend', line_width=2)
+with open("./datafiles/Exchange_3.json", "r") as file:
+    data3 = json.load(file)
 
-st.bokeh_chart(p, use_container_width=True)
+json_data = data1 + data2 + data3
+
+df = pd.DataFrame(json_data)
+df['TimeStamp'] = pd.to_datetime(df['TimeStamp'])
+df['Minute'] = df['TimeStamp'].dt.minute
+
+heatmap_data = df.pivot_table(index='Exchange', columns='Minute', aggfunc='size', fill_value=0)
+
+plot = plt.figure(figsize=(12, 8))
+sns.heatmap(heatmap_data, annot=True, cmap="YlGnBu", fmt='g', linewidths=.5)
+plt.title('Exchange Activity Heatmap')
+plt.xlabel('Minute')
+plt.ylabel('Exchange')
+st.pyplot(plot.get_figure())

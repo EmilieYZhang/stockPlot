@@ -1,9 +1,11 @@
+import pandas as pd
 import streamlit as st
-from bokeh.io import show
-from bokeh.models import (ColumnDataSource, DataCube, GroupingInfo,
-                          StringFormatter, SumAggregator, TableColumn)
+import json
+from bokeh.models import ColumnDataSource, StringFormatter, TableColumn, SumAggregator, GroupingInfo, DataCube
 from bokeh.plotting import figure
-from dataParser import Ex1_symbols_latest_prices_list, Ex2_symbols_latest_prices_list,Ex3_symbols_latest_prices_list
+from bokeh.palettes import Category10_3
+from bokeh.transform import dodge
+from dataParser import Ex1_symbols_latest_prices_list, Ex2_symbols_latest_prices_list, Ex3_symbols_latest_prices_list
 
 st.set_page_config(
     page_title="InfoExchange",
@@ -51,14 +53,41 @@ st.bokeh_chart(cube, use_container_width=True)
 st.subheader('Trend overview', divider='grey')
 st.text('Graphical representation of recently executed prices of ticker symbols.')
 
-x = [1, 2, 3, 4, 5]
-y = [6, 7, 2, 4, 5]
+### SECOND GRAPH: grouped bar graph by traded symbols
 
-p = figure(
-    title='simple line example',
-    x_axis_label='x',
-    y_axis_label='y')
+with open("./datafiles/Exchange_1.json", "r") as file:
+    data1 = json.load(file)
 
-p.line(x, y, legend_label='Trend', line_width=2)
+with open("./datafiles/Exchange_2.json", "r") as file:
+    data2 = json.load(file)
+
+with open("./datafiles/Exchange_3.json", "r") as file:
+    data3 = json.load(file)
+
+json_data = data1 + data2 + data3
+
+df = pd.DataFrame(json_data)
+
+st.title("Symbol Activity Bar Graph")
+
+grouped_data = df.groupby(['Symbol', 'MessageType']).size().reset_index(name='Count')
+
+target_symbols = [pair[0] for pair in Pairs1 + Pairs2 + Pairs3]
+
+p = figure(x_range=target_symbols, plot_height=400, title="Symbol Activity",
+           toolbar_location=None, tools="")
+
+color_mapper = {'NewOrderRequest': Category10_3[0], 'Trade': Category10_3[1], 'Cancelled': Category10_3[2]}
+
+dodge_amount = 0.2
+
+for i, msg_type in enumerate(['NewOrderRequest', 'Trade', 'Cancelled']):
+    source = ColumnDataSource(grouped_data[grouped_data['MessageType'] == msg_type])
+    p.vbar(x=dodge('Symbol', dodge_amount * (i - 1), range=p.x_range), top='Count',
+           width=0.2, source=source, color=color_mapper[msg_type], legend_label=msg_type)
+
+p.xgrid.grid_line_color = None
+p.legend.location = "top_left"
+p.legend.orientation = "horizontal"
 
 st.bokeh_chart(p, use_container_width=True)
