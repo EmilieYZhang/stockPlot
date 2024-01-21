@@ -16,4 +16,5 @@ https://docs.bokeh.org/en/latest/docs/gallery.html
 >or any other python plotting library: matplotlib, seaborn, etc.
 
 & yes, our frontend which uses streamlit is seamless an can accept plots from most libraries to display
-important: python parsing should be done dynamically, no hard coding in this repo
+
+>important: python parsing should be done dynamically, no hard coding in this repo
